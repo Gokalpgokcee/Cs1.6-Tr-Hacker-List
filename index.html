@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Banlist Arşivi</title>
+<style>
+  :root { --bg: #0f172a; --card: #1e293b; --text: #f8fafc; --muted: #94a3b8; --accent: #ef4444; --border: #334155; }
+  * { box-sizing: border-box; font-family: system-ui, -apple-system, sans-serif; }
+  body { background: var(--bg); color: var(--text); margin: 0; padding: 20px; }
+  .container { max-width: 1000px; margin: 0 auto; }
+  header { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 15px; margin-bottom: 20px; }
+  h1 { margin: 0; font-size: 1.5rem; display: flex; align-items: center; gap: 10px; }
+  .badge { background: var(--accent); color: white; font-size: 0.85rem; padding: 3px 10px; border-radius: 20px; }
+  input { width: 100%; padding: 14px 18px; border-radius: 8px; border: 1px solid var(--border); background: var(--card); color: var(--text); font-size: 1rem; outline: none; margin-bottom: 15px; }
+  input:focus { border-color: var(--accent); }
+  .table-wrap { background: var(--card); border-radius: 8px; overflow-x: auto; border: 1px solid var(--border); }
+  table { width: 100%; border-collapse: collapse; text-align: left; }
+  th, td { padding: 12px 16px; border-bottom: 1px solid var(--border); font-size: 0.9rem; }
+  th { background: #162032; color: var(--muted); font-weight: 600; text-transform: uppercase; font-size: 0.75rem; }
+  tr:hover { background: rgba(255,255,255,0.03); }
+  .count { background: #334155; padding: 2px 8px; border-radius: 4px; font-weight: bold; }
+  .empty { text-align: center; padding: 30px; color: var(--muted); }
+</style>
+</head>
+<body>
+
+<div class="container">
+  <header>
+    <h1>🛡️ Sunucu Banlist Arşivi <span class="badge" id="totalCount">0 Kayıt</span></h1>
+  </header>
+
+  <input type="text" id="searchInput" placeholder="Nick, IP (örn: 78.190) veya Sunucu adı ara..." autocomplete="off">
+
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Oyuncu (Nick)</th>
+          <th>IP Bloğu</th>
+          <th>Tespit</th>
+          <th>Yakalandığı Sunucu</th>
+          <th>Son Tarih</th>
+        </tr>
+      </thead>
+      <tbody id="tableBody"></tbody>
+    </table>
+    <div id="emptyMsg" class="empty" style="display:none;">Eşleşen kayıt bulunamadı.</div>
+  </div>
+</div>
+
+<!-- 3000 KİŞİLİK VERİNİ BURAYA YAPIŞTIR -->
+<script id="rawData" type="text/plain">
+NICK: JACK ŞOPAROV | IP: 78.190.235.*** | DURUM: Cheats detected | SUNUCU: - | TARIH: Today 19:12
+NICK: Montenegro.44 | IP: 95.70.218.*** | DURUM: Cheats detected | SUNUCU: FACETOFACE [PRO/PUB] | CS.F2FPRO.NET | TARIH: Today 16:32
+NICK: erdooo | IP: 78.182.138.*** | DURUM: Cheats detected | SUNUCU: www.OyunYoneticisi.Com | TARIH: Today 15:19
+NICK: erdooo | IP: 78.182.138.*** | DURUM: Cheats detected | SUNUCU: www.OyunYoneticisi.Com | TARIH: Today 15:10
+NICK: Alfa34 | IP: 31.223.84.*** | DURUM: Cheats detected | SUNUCU: - | TARIH: Today 14:43
+NICK: Alfa34 | IP: 31.223.84.*** | DURUM: Cheats detected | SUNUCU: - | TARIH: Today 14:23
+</script>
+
+<script>
+  // Ham metni otomatik ayrıştırır ve tekrarlayan kayıtları birleştirir
+  function parseData(raw) {
+    const lines = raw.trim().split('\n');
+    const map = new Map();
+
+    lines.forEach(line => {
+      if (!line.includes('NICK:')) return;
+      const nickMatch = line.match(/NICK:\s*(.*?)\s*\|\s*IP:/);
+      const ipMatch = line.match(/IP:\s*(.*?)\s*\|\s*DURUM:/);
+      const serverMatch = line.match(/SUNUCU:\s*(.*?)\s*\|\s*TARIH:/);
+      const dateMatch = line.match(/TARIH:\s*(.*)$/);
+
+      if (nickMatch && ipMatch) {
+        const nick = nickMatch[1].trim();
+        const ip = ipMatch[1].trim();
+        const server = serverMatch ? serverMatch[1].trim() : '-';
+        const date = dateMatch ? dateMatch[1].trim() : '-';
+        const key = `${nick.toLowerCase()}|${ip}`;
+
+        if (map.has(key)) {
+          const existing = map.get(key);
+          existing.count += 1;
+          if (existing.server === '-' && server !== '-') existing.server = server;
+        } else {
+          map.set(key, { nick, ip, server, date, count: 1 });
+        }
+      }
+    });
+    return Array.from(map.values());
+  }
+
+  const records = parseData(document.getElementById('rawData').textContent);
+  const tbody = document.getElementById('tableBody');
+  const emptyMsg = document.getElementById('emptyMsg');
+  const totalCount = document.getElementById('totalCount');
+  const searchInput = document.getElementById('searchInput');
+
+  function render(list) {
+    totalCount.textContent = `${list.length} Tekil Kayıt`;
+    if (list.length === 0) {
+      tbody.innerHTML = '';
+      emptyMsg.style.display = 'block';
+      return;
+    }
+    emptyMsg.style.display = 'none';
+    // Performans için ilk 200 eşleşmeyi gösterir
+    tbody.innerHTML = list.slice(0, 200).map(r => `
+      <tr>
+        <td><strong>${escapeHTML(r.nick)}</strong></td>
+        <td><code>${escapeHTML(r.ip)}</code></td>
+        <td><span class="count">${r.count}x</span></td>
+        <td>${escapeHTML(r.server)}</td>
+        <td>${escapeHTML(r.date)}</td>
+      </tr>
+    `).join('');
+  }
+
+  function escapeHTML(str) {
+    return str.replace(/[&<>'"]/g, tag => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[tag]));
+  }
+
+  searchInput.addEventListener('input', (e) => {
+    const q = e.target.value.toLowerCase().trim();
+    const filtered = records.filter(r => 
+      r.nick.toLowerCase().includes(q) || 
+      r.ip.includes(q) || 
+      r.server.toLowerCase().includes(q)
+    );
+    render(filtered);
+  });
+
+  render(records);
+</script>
+</body>
+</html>
