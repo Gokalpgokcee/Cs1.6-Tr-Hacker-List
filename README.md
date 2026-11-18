@@ -28,4 +28,4 @@ Hatalı bir kaydın düzeltilmesi veya kaldırılması için: **4mp21diz5@mozmai
 
 ## Lisans
 
-[All Rigts Reserved](LICENSE)
+[All Rigts Reserved](LICENSE.md)
