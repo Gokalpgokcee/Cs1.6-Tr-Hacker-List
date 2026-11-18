@@ -1,137 +1,307 @@
 <!DOCTYPE html>
 <html lang="tr">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Banlist Arşivi</title>
-<style>
-  :root { --bg: #0f172a; --card: #1e293b; --text: #f8fafc; --muted: #94a3b8; --accent: #ef4444; --border: #334155; }
-  * { box-sizing: border-box; font-family: system-ui, -apple-system, sans-serif; }
-  body { background: var(--bg); color: var(--text); margin: 0; padding: 20px; }
-  .container { max-width: 1000px; margin: 0 auto; }
-  header { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 15px; margin-bottom: 20px; }
-  h1 { margin: 0; font-size: 1.5rem; display: flex; align-items: center; gap: 10px; }
-  .badge { background: var(--accent); color: white; font-size: 0.85rem; padding: 3px 10px; border-radius: 20px; }
-  input { width: 100%; padding: 14px 18px; border-radius: 8px; border: 1px solid var(--border); background: var(--card); color: var(--text); font-size: 1rem; outline: none; margin-bottom: 15px; }
-  input:focus { border-color: var(--accent); }
-  .table-wrap { background: var(--card); border-radius: 8px; overflow-x: auto; border: 1px solid var(--border); }
-  table { width: 100%; border-collapse: collapse; text-align: left; }
-  th, td { padding: 12px 16px; border-bottom: 1px solid var(--border); font-size: 0.9rem; }
-  th { background: #162032; color: var(--muted); font-weight: 600; text-transform: uppercase; font-size: 0.75rem; }
-  tr:hover { background: rgba(255,255,255,0.03); }
-  .count { background: #334155; padding: 2px 8px; border-radius: 4px; font-weight: bold; }
-  .empty { text-align: center; padding: 30px; color: var(--muted); }
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CS 1.6 Hileci & Kara Liste Veritabanı</title>
+    <style>
+        :root {
+            --bg-color: #121417;
+            --card-bg: #1c1f24;
+            --text-main: #e4e6eb;
+            --text-muted: #9aa0a6;
+            --accent: #f39c12; /* CS 1.6 Turuncusu */
+            --accent-hover: #d68910;
+            --danger: #e74c3c;
+            --border: #2c313a;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            line-height: 1.6;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            padding: 30px 20px;
+            background-color: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border-top: 4px solid var(--accent);
+        }
+
+        header h1 {
+            font-size: 1.8rem;
+            color: var(--accent);
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        header p {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+        }
+
+        .controls {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .search-box {
+            flex: 1;
+            min-width: 250px;
+            padding: 12px 15px;
+            background-color: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            color: var(--text-main);
+            font-size: 1rem;
+            outline: none;
+        }
+
+        .search-box:focus {
+            border-color: var(--accent);
+        }
+
+        .stats-box {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border);
+            padding: 12px 20px;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            font-weight: bold;
+            color: var(--accent);
+        }
+
+        .table-container {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            padding: 14px 18px;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+        }
+
+        th {
+            background-color: #16181c;
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        tr:hover {
+            background-color: #23272e;
+        }
+
+        .player-name {
+            font-family: 'Consolas', 'Courier New', monospace;
+            font-size: 1.05rem;
+            color: #fff;
+            font-weight: 600;
+        }
+
+        .btn {
+            background-color: #2c313a;
+            color: var(--text-main);
+            border: 1px solid #3e4451;
+            padding: 6px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            transition: all 0.2s;
+            margin-right: 5px;
+        }
+
+        .btn:hover {
+            background-color: var(--accent);
+            color: #000;
+            border-color: var(--accent);
+            font-weight: bold;
+        }
+
+        .btn-ban:hover {
+            background-color: var(--danger);
+            color: #fff;
+            border-color: var(--danger);
+        }
+
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background-color: var(--accent);
+            color: #000;
+            padding: 12px 24px;
+            border-radius: 6px;
+            font-weight: bold;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+            opacity: 0;
+            transition: opacity 0.3s;
+            pointer-events: none;
+        }
+
+        .toast.show {
+            opacity: 1;
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 30px;
+            color: var(--text-muted);
+            font-size: 0.85rem;
+        }
+    </style>
 </head>
 <body>
 
 <div class="container">
-  <header>
-    <h1>🛡️ Sunucu Banlist Arşivi <span class="badge" id="totalCount">0 Kayıt</span></h1>
-  </header>
+    <header>
+        <h1>CS 1.6 Sunucu Yöneticileri Kara Listesi</h1>
+        <p>FunGun kayıtlarından derlenen tespit edilmiş hileci oyuncu isimleri. Sunucunuzda önlem almak için arama yapabilir veya tek tıkla ban komutunu kopyalayabilirsiniz.</p>
+    </header>
 
-  <input type="text" id="searchInput" placeholder="Nick, IP (örn: 78.190) veya Sunucu adı ara..." autocomplete="off">
+    <div class="controls">
+        <input type="text" id="searchInput" class="search-box" placeholder="Oyuncu adı ara..." onkeyup="filterList()">
+        <div class="stats-box">
+            Toplam Kayıt: <span id="totalCount" style="margin-left: 6px;">0</span>
+        </div>
+    </div>
 
-  <div class="table-wrap">
-    <table>
-      <thead>
-        <tr>
-          <th>Oyuncu (Nick)</th>
-          <th>IP Bloğu</th>
-          <th>Tespit</th>
-          <th>Yakalandığı Sunucu</th>
-          <th>Son Tarih</th>
-        </tr>
-      </thead>
-      <tbody id="tableBody"></tbody>
-    </table>
-    <div id="emptyMsg" class="empty" style="display:none;">Eşleşen kayıt bulunamadı.</div>
-  </div>
+    <div class="table-container">
+        <table>
+            <thead>
+                <tr>
+                    <th style="width: 60px;">#</th>
+                    <th>Oyuncu Nicki</th>
+                    <th style="text-align: right;">Hızlı İşlemler</th>
+                </tr>
+            </thead>
+            <tbody id="playerTableBody">
+                <!-- Liste JavaScript ile otomatik doldurulacak -->
+            </tbody>
+        </table>
+    </div>
+
+    <footer>
+        Bu liste CS 1.6 topluluğu ve sunucu yöneticilerini bilgilendirme amacıyla oluşturulmuştur.
+    </footer>
 </div>
 
-<!-- 3000 KİŞİLİK VERİNİ BURAYA YAPIŞTIR -->
-<script id="rawData" type="text/plain">
-NICK: JACK ŞOPAROV | IP: 78.190.235.*** | DURUM: Cheats detected | SUNUCU: - | TARIH: Today 19:12
-NICK: Montenegro.44 | IP: 95.70.218.*** | DURUM: Cheats detected | SUNUCU: FACETOFACE [PRO/PUB] | CS.F2FPRO.NET | TARIH: Today 16:32
-NICK: erdooo | IP: 78.182.138.*** | DURUM: Cheats detected | SUNUCU: www.OyunYoneticisi.Com | TARIH: Today 15:19
-NICK: erdooo | IP: 78.182.138.*** | DURUM: Cheats detected | SUNUCU: www.OyunYoneticisi.Com | TARIH: Today 15:10
-NICK: Alfa34 | IP: 31.223.84.*** | DURUM: Cheats detected | SUNUCU: - | TARIH: Today 14:43
-NICK: Alfa34 | IP: 31.223.84.*** | DURUM: Cheats detected | SUNUCU: - | TARIH: Today 14:23
-</script>
+<div id="toast" class="toast">Kopyalandı!</div>
 
 <script>
-  // Ham metni otomatik ayrıştırır ve tekrarlayan kayıtları birleştirir
-  function parseData(raw) {
-    const lines = raw.trim().split('\n');
-    const map = new Map();
+    // =========================================================================
+    // .TXT DOSYASINDAKİ OYUNCU İSİMLERİNİ AŞAĞIDAKİ TERS TIRNAKLAR (`) ARASINA YAPIŞTIR
+    // Her satıra bir oyuncu ismi gelecek şekilde alt alta yapıştırman yeterlidir.
+    // =========================================================================
+    const rawPlayerList = `
+OrnekHileci1
+ProAim_TR
+WallHack_Master
+HeadshotKing99
+SpeedHack_Oyuncu
+    `;
 
-    lines.forEach(line => {
-      if (!line.includes('NICK:')) return;
-      const nickMatch = line.match(/NICK:\s*(.*?)\s*\|\s*IP:/);
-      const ipMatch = line.match(/IP:\s*(.*?)\s*\|\s*DURUM:/);
-      const serverMatch = line.match(/SUNUCU:\s*(.*?)\s*\|\s*TARIH:/);
-      const dateMatch = line.match(/TARIH:\s*(.*)$/);
+    // Metni satırlara böl, boşlukları temizle ve boş satırları yoksay
+    const players = rawPlayerList
+        .split('\n')
+        .map(name => name.trim())
+        .filter(name => name.length > 0);
 
-      if (nickMatch && ipMatch) {
-        const nick = nickMatch[1].trim();
-        const ip = ipMatch[1].trim();
-        const server = serverMatch ? serverMatch[1].trim() : '-';
-        const date = dateMatch ? dateMatch[1].trim() : '-';
-        const key = `${nick.toLowerCase()}|${ip}`;
+    const tableBody = document.getElementById('playerTableBody');
+    const totalCountEl = document.getElementById('totalCount');
 
-        if (map.has(key)) {
-          const existing = map.get(key);
-          existing.count += 1;
-          if (existing.server === '-' && server !== '-') existing.server = server;
-        } else {
-          map.set(key, { nick, ip, server, date, count: 1 });
+    function renderTable(list) {
+        tableBody.innerHTML = '';
+        totalCountEl.textContent = list.length;
+
+        if (list.length === 0) {
+            tableBody.innerHTML = '<tr><td colspan="3" style="text-align:center; color:#9aa0a6; padding: 30px;">Kayıt bulunamadı.</td></tr>';
+            return;
         }
-      }
-    });
-    return Array.from(map.values());
-  }
 
-  const records = parseData(document.getElementById('rawData').textContent);
-  const tbody = document.getElementById('tableBody');
-  const emptyMsg = document.getElementById('emptyMsg');
-  const totalCount = document.getElementById('totalCount');
-  const searchInput = document.getElementById('searchInput');
+        list.forEach((player, index) => {
+            const row = document.createElement('tr');
+            
+            // Güvenlik (XSS) için isimleri metin olarak ekliyoruz
+            const numCell = document.createElement('td');
+            numCell.textContent = index + 1;
+            numCell.style.color = '#9aa0a6';
 
-  function render(list) {
-    totalCount.textContent = `${list.length} Tekil Kayıt`;
-    if (list.length === 0) {
-      tbody.innerHTML = '';
-      emptyMsg.style.display = 'block';
-      return;
+            const nameCell = document.createElement('td');
+            nameCell.className = 'player-name';
+            nameCell.textContent = player;
+
+            const actionCell = document.createElement('td');
+            actionCell.style.textAlign = 'right';
+
+            // İsim Kopyala Butonu
+            const copyNameBtn = document.createElement('button');
+            copyNameBtn.className = 'btn';
+            copyNameBtn.textContent = 'İsmi Kopyala';
+            copyNameBtn.onclick = () => copyToClipboard(player, `"${player}" kopyalandı!`);  // Ban Komutu Kopyala Butonu (AMX Mod X uyumlu) const copyBanBtn = document.createElement('button'); copyBanBtn.className = 'btn btn-ban'; copyBanBtn.textContent = 'Ban Kodu Kopyala'; // Tırnak işaretlerini temizleyerek konsol komutuna uygun hale getirir const safeName = player.replace(/"/g, ''); const banCommand = `amx_ban 0 "${safeName}" "Kara Liste - Hile Tespiti"`;
+            copyBanBtn.onclick = () => copyToClipboard(banCommand, 'AMX Ban komutu kopyalandı!');
+
+            actionCell.appendChild(copyNameBtn);
+            actionCell.appendChild(copyBanBtn);
+
+            row.appendChild(numCell);
+            row.appendChild(nameCell);
+            row.appendChild(actionCell);
+
+            tableBody.appendChild(row);
+        });
     }
-    emptyMsg.style.display = 'none';
-    // Performans için ilk 200 eşleşmeyi gösterir
-    tbody.innerHTML = list.slice(0, 200).map(r => `
-      <tr>
-        <td><strong>${escapeHTML(r.nick)}</strong></td>
-        <td><code>${escapeHTML(r.ip)}</code></td>
-        <td><span class="count">${r.count}x</span></td>
-        <td>${escapeHTML(r.server)}</td>
-        <td>${escapeHTML(r.date)}</td>
-      </tr>
-    `).join('');
-  }
 
-  function escapeHTML(str) {
-    return str.replace(/[&<>'"]/g, tag => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[tag]));
-  }
+    function filterList() {
+        const query = document.getElementById('searchInput').value.toLowerCase();
+        const filtered = players.filter(p => p.toLowerCase().includes(query));
+        renderTable(filtered);
+    }
 
-  searchInput.addEventListener('input', (e) => {
-    const q = e.target.value.toLowerCase().trim();
-    const filtered = records.filter(r => 
-      r.nick.toLowerCase().includes(q) || 
-      r.ip.includes(q) || 
-      r.server.toLowerCase().includes(q)
-    );
-    render(filtered);
-  });
+    function copyToClipboard(text, message) {
+        navigator.clipboard.writeText(text).then(() => {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.classList.add('show');
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 2500);
+        });
+    }
 
-  render(records);
+    // Sayfa yüklendiğinde tabloyu oluştur
+    renderTable(players);
 </script>
+
 </body>
-</html>
+</html>S
