@@ -1,52 +1,30 @@
-# FgAutoBanner-Tr-
+# CS 1.6 Hileci Listesi
 
-CS 1.6 sunucuları için Türk hilecilerin nicklerini listeleyen ve sunucuya o nickle girenleri otomatik tespit edip banlayan AMX Mod X eklentisi.
+Türk CS 1.6 oyuncuları arasında hile yaparken tespit edilen oyuncuların nicklerini gösteren, herkese açık ve aranabilir bir liste sayfası. Amaç, sunucu yöneticilerinin sunucularını hilecilerden daha kolay arındırmasına yardımcı olmaktır.
 
-> Sadece göz atmak isterseniz: **[Herkese açık liste sayfası](https://github.com/Gokalpgokcee/Cs1.6-Tr-Hacker-List)**
+## Sayfada neler var?
 
-## Nasıl çalışır?
+- Nick veya sunucu adına göre arama
+- Son görülme tarihine, tespit sayısına veya nick sırasına göre sıralama
+- Her nick için tespit sayısı, son görülme tarihi ve yakalandığı sunucular
+- Telefonda da rahat kullanılan, aydınlık/karanlık temaya uyumlu tek sayfa
 
-1. Python scripti Fungun'daki "Cheats detected" kayıtlarından Türk oyuncuların nicklerini çeker.
-2. İkinci script nickleri temizler: tekrarları siler, bozuk karakterleri düzeltir.
-3. Eklenti bu listeyi okur. Listedeki bir nickle sunucuya giren oyuncuya `amx_addban` ile ban uygular.
+## Veri hakkında
 
-## Kurulum
+- Kayıtlar, herkese açık kaynaklardaki otomatik "hile tespit edildi" kayıtlarından derlenmiştir.
+- Aynı nickin kayıtları tek satırda birleştirilmiştir.
+- **IP adresleri yayınlanmaz.** Sadece oyun içi nickler ve sunucu bilgisi gösterilir.
+- Otomatik tespitler yanılabilir. Bir nickin listede olması, o kişinin kesin olarak hile yaptığı anlamına gelmez. Nick eşleşmesi kimlik kanıtı değildir.
 
-1. Eklentiyi (`.amxx`) `addons/amxmodx/plugins/` klasörüne koyun.
-2. `addons/amxmodx/configs/plugins.ini` dosyasına eklentinin adını yazın.
-3. Nick listesini eklentinin okuduğu konuma koyun (`DOSYA_YOLU_BURAYA`).
-4. Sunucuyu yeniden başlatın veya haritayı değiştirin.
+## Yöneticiler için
 
-## Listeyi güncelleme
+Listeyi sunucunuzda otomatik kullanmak isterseniz AMXX eklentisi ve scriptler ayrı bir repoda: **[FgAutoBanner-Tr-](https://github.com/Gokalpgokcee/FgAutoBanner-Tr-)**
 
-```
-python SCRIPT_1.py   # nickleri çeker
-python SCRIPT_2.py   # nickleri temizler
-```
+Otomatik ban kullanacaksanız kalıcı ban yerine kısa süreli ban veya yönetici uyarısı tercih edin. Kısa ve yaygın nickler yanlış kişileri etkileyebilir.
 
-Scriptlerin gerçek adlarını ve gerekli Python sürümünü buraya yazın.
+## Listeden çıkarılma / hata bildirimi
 
-## Önemli uyarı
-
-**Nick eşleşmesi kimlik kanıtı değildir.** Aynı nicki kullanan masum bir oyuncu, ya da bir nicki taklit eden biri yanlışlıkla banlanabilir. Özellikle kısa ve yaygın nickler (`ez`, `Alfa34` gibi) risklidir.
-
-Bu yüzden önerilenler:
-
-- Kalıcı ban yerine **kısa süreli ban** veya sadece **yöneticilere uyarı** kullanın.
-- Çok kısa nickleri otomatik ban dışında tutun.
-- Bir oyuncu itiraz ederse banı kaldırın.
-
-Eklentiyi kullanmak kendi sorumluluğunuzdadır.
-
-## Veri ve gizlilik
-
-- Liste yalnızca oyun içi nickleri içerir. IP adresleri yayınlanmaz.
-- Kayıtlar otomatik tespite dayanır ve hatalı olabilir.
-- Listeden çıkarılmak veya hatalı kaydı bildirmek için: **4mp21diz5@mozmail.com**
-
-## Katkı
-
-Hata bildirimi ve öneriler için [Issues](../../issues) bölümünü kullanabilirsiniz.
+Hatalı bir kaydın düzeltilmesi veya kaldırılması için: **4mp21diz5@mozmail.com**
 
 ## Lisans
 
